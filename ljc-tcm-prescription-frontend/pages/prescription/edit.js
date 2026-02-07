@@ -186,7 +186,7 @@ Page({
       name: name.trim(),
       items: items.map(item => ({
         herbId: item.herbId,
-        doseG: item.doseG
+        doseG: parseFloat(item.doseG) // 转换为数字
       }))
     };
 

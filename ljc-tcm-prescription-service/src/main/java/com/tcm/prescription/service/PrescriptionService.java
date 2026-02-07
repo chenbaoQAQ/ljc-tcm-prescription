@@ -129,6 +129,10 @@ public class PrescriptionService {
 
     public Page<PrescriptionSimpleResp> list(String keyword, int page, int size) {
         Specification<Prescription> spec = (root, q, cb) -> {
+            // Fetch items to avoid N+1, but for count query we don't want this
+            if (q.getResultType() != Long.class && q.getResultType() != long.class) {
+                root.fetch("items", javax.persistence.criteria.JoinType.LEFT);
+            }
             if (StringUtils.hasText(keyword)) {
                 return cb.like(root.get("name"), "%" + keyword + "%");
             }
@@ -139,7 +143,7 @@ public class PrescriptionService {
             PrescriptionSimpleResp resp = new PrescriptionSimpleResp();
             resp.setId(e.getId());
             resp.setName(e.getName());
-            resp.setItemCount(e.getItems().size());
+            resp.setItemCount(e.getItems() != null ? e.getItems().size() : 0);
             resp.setUpdatedAt(e.getUpdatedAt());
             return resp;
         });

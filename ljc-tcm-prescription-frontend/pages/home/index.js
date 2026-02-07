@@ -6,6 +6,12 @@ Page({
     });
   },
 
+  goToMedicalHistory() {
+    wx.navigateTo({
+      url: '/pages/medical/list'
+    });
+  },
+
   goToPrescriptionList() {
     wx.navigateTo({
       url: '/pages/prescription/list'

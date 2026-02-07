@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>开病历</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .prescription-picker {
+            margin-bottom: 20px;
+        }
+
+        .prescription-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-bar">
+        <a href="index.html" class="nav-back"><i class="fas fa-chevron-left"></i></a>
+        <h1 class="nav-title">开病历</h1>
+        <div class="nav-back"></div>
+    </div>
+
+    <div class="container">
+        <!-- Patient Info -->
+        <h3 class="title">患者信息</h3>
+        <div class="card form-item">
+            <h3 class="form-label">患者姓名 *</h3>
+            <input type="text" id="patientName" class="form-input mb-20" placeholder="请输入姓名" />
+
+            <h3 class="form-label">就诊日期</h3>
+            <input type="date" id="visitDate" class="form-input" />
+        </div>
+
+        <!-- Prescription Selection -->
+        <h3 class="title">选择药方 (至少1个)</h3>
+        <div class="card" id="prescriptionList">
+            <div class="empty-state">加载中...</div>
+        </div>
+
+        <!-- Save Button -->
+        <button class="btn btn-primary lg" onclick="saveRecord()">保存病历</button>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            // Set Default Date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('visitDate').value = today;
+
+            // Load Prescriptions
+            loadPrescriptions();
+        }
+
+        async function loadPrescriptions() {
+            try {
+                const res = await api.getPrescriptions({ page: 1, size: 200 });
+                const list = res.content || [];
+                const listEl = document.getElementById('prescriptionList');
+
+                if (list.length === 0) {
+                    listEl.innerHTML = '<div class="empty-state">暂无药方，请先添加</div>';
+                    return;
+                }
+
+                listEl.innerHTML = list.map(item => `
+                    <label class="prescription-item">
+                        <input type="checkbox" name="prescription" value="${item.id}" style="transform: scale(1.5); margin-right: 15px;">
+                        <div>
+                            <div class="list-title">${item.name}</div>
+                            <div class="list-subtitle">${item.itemCount} 味药材</div>
+                        </div>
+                    </label>
+                `).join('');
+            } catch (err) {
+                // Handled
+            }
+        }
+
+        async function saveRecord() {
+            const patientName = document.getElementById('patientName').value.trim();
+            const visitDate = document.getElementById('visitDate').value;
+            const checkedBoxes = document.querySelectorAll('input[name="prescription"]:checked');
+            const prescriptionIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+
+            if (!patientName) {
+                showToast('请输入患者姓名', 'error');
+                return;
+            }
+
+            if (prescriptionIds.length === 0) {
+                showToast('请至少选择一个药方', 'error');
+                return;
+            }
+
+            try {
+                const res = await api.createMedicalRecord({
+                    patientName,
+                    visitDate,
+                    prescriptionIds
+                });
+
+                // Show Success Modal
+                let herbListHtml = res.mergedHerbsText.replace(/,/g, ',<br>');
+
+                showModal('✅ 病历保存成功', `
+                    <p><strong>患者：</strong>${patientName}</p>
+                    <p><strong>药方：</strong>${res.prescriptionNames}</p>
+                    <div class="highlight-box">${herbListHtml}</div>
+                    <button class="btn btn-sm" onclick="copyHerbs('${res.mergedHerbsText}')">📄 复制药材清单</button>
+                `, () => {
+                    if (confirm('是否继续开下一个病历？')) {
+                        document.getElementById('patientName').value = '';
+                        document.querySelectorAll('input[name="prescription"]').forEach(cb => cb.checked = false);
+                    } else {
+                        window.location.href = 'medical-list.html';
+                    }
+                }, '查看历史');
+
+            } catch (err) {
+                // Handled
+            }
+        }
+
+        function copyHerbs(text) {
+            // Try standard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('已复制到剪贴板');
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('已复制到剪贴板');
+                } else {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+            } catch (err) {
+                showToast('复制失败，请手动复制', 'error');
+            }
+
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+
+</html>

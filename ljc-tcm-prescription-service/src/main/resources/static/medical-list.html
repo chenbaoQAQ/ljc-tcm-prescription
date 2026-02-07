@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>病历历史</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="nav-bar">
+        <a href="index.html" class="nav-back"><i class="fas fa-chevron-left"></i></a>
+        <h1 class="nav-title">病历历史</h1>
+        <div class="nav-back"></div>
+    </div>
+
+    <div class="container">
+        <!-- Search -->
+        <div class="card form-item" style="display: flex; gap: 10px;">
+            <input type="text" id="searchInput" class="form-input" placeholder="输入患者姓名搜索" />
+            <button class="btn btn-sm btn-primary" onclick="search()">搜索</button>
+        </div>
+
+        <!-- List -->
+        <h3 class="title">病历记录</h3>
+        <div id="recordList">
+            <div class="empty-state">输入姓名开始搜索</div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            // Check URL Params
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('q');
+            if (name) {
+                document.getElementById('searchInput').value = name;
+                search();
+            } else {
+                search(''); // Load all if possible
+            }
+        }
+
+        async function search() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            const listEl = document.getElementById('recordList');
+            listEl.innerHTML = '<div class="empty-state">加载中...</div>';
+
+            try {
+                const res = await api.getMedicalRecords({
+                    patientName: keyword,
+                    page: 1,
+                    size: 50
+                });
+
+                const list = res.content || res.list || []; // Backend field might vary
+
+                if (list.length === 0) {
+                    listEl.innerHTML = '<div class="empty-state">未找到相关记录</div>';
+                    return;
+                }
+
+                listEl.innerHTML = list.map(item => `
+                    <div class="card" onclick="viewDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                        <div class="list-item" style="border:none; padding:10px 0;">
+                            <div>
+                                <h4 class="list-title" style="margin-bottom:5px;">${item.patientName} <span style="font-size:14px;color:#999;font-weight:normal;">(${formatDate(item.visitDate)})</span></h4>
+                                <p class="list-subtitle">药方：${item.prescriptionNames}</p>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color:#ddd;"></i>
+                        </div>
+                        <div class="highlight-box" style="margin-top:10px; font-size:14px; color:#666;">
+                            ${item.mergedHerbsText}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                listEl.innerHTML = '<div class="empty-state">加载失败</div>';
+            }
+        }
+
+        function viewDetail(item) {
+            showModal('病历详情', `
+                <p><strong>患者：</strong>${item.patientName}</p>
+                <p><strong>日期：</strong>${formatDate(item.visitDate)}</p>
+                <p><strong>药方：</strong>${item.prescriptionNames}</p>
+                <div class="highlight-box">${item.mergedHerbsText}</div>
+                <button class="btn btn-sm" onclick="copyToClipboard('${item.mergedHerbsText}')">📄 复制药材清单</button>
+            `);
+        }
+
+        function copyToClipboard(text) {
+            // Unsecure context (HTTP) usually blocks navigator.clipboard
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('已复制');
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showToast('已复制');
+                else showToast('复制失败', 'error');
+            } catch (err) {
+                showToast('复制失败', 'error');
+            }
+
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+
+</html>
