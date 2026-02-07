@@ -1,0 +1,142 @@
+/* pages/herb/list.wxss */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 20rpx;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.search-input {
+  flex: 1;
+  background: #f0f0f0;
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+  margin-right: 20rpx;
+}
+
+.search-btn {
+  color: #07c160;
+  font-weight: 500;
+}
+
+.list-container {
+  padding-bottom: 100rpx;
+}
+
+.card {
+  background: white;
+  margin: 20rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+  font-weight: bold;
+}
+
+.herb-name {
+  font-size: 34rpx;
+}
+
+.herb-status {
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.herb-status.active {
+  background: #eaffee;
+  color: #07c160;
+}
+
+.herb-status.inactive {
+  background: #eee;
+  color: #999;
+}
+
+.card-body {
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20rpx;
+}
+
+.fab {
+  position: fixed;
+  bottom: 60rpx;
+  right: 60rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: #07c160;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.4);
+  z-index: 20;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  width: 80%;
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.form-item {
+  margin-bottom: 20rpx;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.input {
+  border: 1rpx solid #ddd;
+  padding: 10rpx;
+  border-radius: 8rpx;
+  height: 60rpx;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40rpx;
+}

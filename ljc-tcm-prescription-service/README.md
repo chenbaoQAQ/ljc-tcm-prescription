@@ -1,4 +1,4 @@
-# 中药方剂管理服务 (TCM Prescription Service)
+# TCM Prescription Service
 
 这是一个用于中药开方小程序的核心后端服务，基于 Spring Boot 2.7.18 和 MySQL 8 构建。
 
@@ -19,198 +19,112 @@
 
 ---
 
-## 🛠️ 技术栈
+## 🛠️ 环境要求
 
 *   **JDK**: 17
-*   **Framework**: Spring Boot 2.7.18
-*   **Database**: MySQL 8.x
-*   **Build Tool**: Maven
-*   **ORM**: Spring Data JPA
-*   **Validation**: Hibernate Validator
-*   **Doc**: SpringDoc OpenAPI (Swagger UI)
+*   **Maven**: 3.6+ (或使用内置 `./mvnw`)
+*   **Docker**: 可选，推荐用于快速启动 MySQL
+*   **MySQL**: 8.x
 
 ---
 
-## 🚀 快速启动
+## 🚀 快速启动 (Quick Start)
 
-### 1. 数据库准备
+为方便前端联调，提供了 Docker Compose 一键启动环境。
 
-请先连接到你的 MySQL 数据库，执行项目根目录下的 `schema.sql` 脚本。
-**注意**：脚本会先**删除**同名数据库（如果存在），然后重新创建。
+### 1. 启动数据库 (推荐)
 
-*   **数据库名**: `ljc_tcm_prescription`
-*   **账号**: `root` (根据你的配置修改)
-*   **密码**: `020222`
+进入 `ljc-tcm-prescription-service` 目录：
 
 ```bash
-# 命令行示例
-mysql -u root -p020222 < schema.sql
+docker-compose up -d
 ```
 
-或者在数据库客户端中复制 `schema.sql` 内容执行。
+这会自动启动 MySQL 8，并导入 `sql/schema.sql` 初始化表结构。
+*   端口映射：`3306:3306`
+*   账号：`root`
+*   密码：`root`
+*   数据库：`tcm_prescription`
 
-### 2.配置说明
-
-默认配置文件位于 `src/main/resources/application-dev.yml`。
-
-关键配置项已预设：
-
-```yaml
-server:
-  port: 8081 # 端口号修改为 8081
-
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/ljc_tcm_prescription?...
-    password: ${DB_PASS:020222} # 默认密码 020222
-```
-
-如果你的环境密码不同，可以通过环境变量覆盖：
-
-```bash
-export DB_PASS=your_password
-```
-
-### 3. 运行服务
-
-使用 Maven Wrapper 启动：
+### 2. 启动后端
 
 ```bash
 # Mac/Linux
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 
 # Windows
-mvnw.cmd spring-boot:run
+mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-启动成功后，访问 Swagger 文档：
+默认配置 (`application-dev.yml`) 已经预设连接 Docker 的 MySQL (此时密码为 root)。
+
+### 3. Swagger 接口文档
+
+服务启动成功后，访问：
 👉 **http://localhost:8081/swagger-ui.html**
 
 ---
 
-## 🧪 接口测试示例 (cURL)
+## ✅ 如何验证 (Smoke Test)
 
-以下示例基于默认端口 `8081`。
-
-### 1. 新增药材 (Create Herb)
+我们提供了一个脚本，可以在**不打开前端页面、不安装 Postman** 的情况下，一键验证核心流程：
 
 ```bash
-curl -X POST http://localhost:8081/api/v1/herbs \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nameCn": "黄芪",
-    "defaultDoseG": 10.0,
-    "notes": "补气固表",
-    "status": 1
-  }'
+./scripts/smoke-test.sh
 ```
 
-```bash
-curl -X POST http://localhost:8081/api/v1/herbs \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nameCn": "当归",
-    "defaultDoseG": 5.0,
-    "notes": "补血活血"
-  }'
-```
-
-### 2. 新增药方 (Create Prescription)
-
-**药方 A** (黄芪 15g + 当归 5g):
-
-```bash
-curl -X POST http://localhost:8081/api/v1/prescriptions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "补气方A",
-    "items": [
-      { "herbId": 1, "doseG": 15.0 },
-      { "herbId": 2, "doseG": 5.0 }
-    ]
-  }'
-```
-
-**药方 B** (黄芪 10g + 当归 10g):
-
-```bash
-curl -X POST http://localhost:8081/api/v1/prescriptions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "调理方B",
-    "items": [
-      { "herbId": 1, "doseG": 10.0 },
-      { "herbId": 2, "doseG": 10.0 }
-    ]
-  }'
-```
-
-### 3. 多药方合并 (Merge)
-
-请求合并 药方A (ID=1) 和 药方B (ID=2)。
-预期结果：
-*   黄芪：取 max(15, 10) = **15g**
-*   当归：取 max(5, 10) = **10g**
-
-```bash
-curl -X POST http://localhost:8081/api/v1/prescriptions/merge \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prescriptionIds": [1, 2]
-  }'
-```
-
-**响应示例**:
-
-```json
-{
-  "code": 0,
-  "message": "success",
-  "data": {
-    "items": [
-      {
-        "herbId": 2,
-        "name": "当归",
-        "doseG": 10.00,
-        "sources": [
-          { "prescriptionId": 1, "doseG": 5.00 },
-          { "prescriptionId": 2, "doseG": 10.00 }
-        ]
-      },
-      {
-        "herbId": 1,
-        "name": "黄芪",
-        "doseG": 15.00,
-        "sources": [
-          { "prescriptionId": 1, "doseG": 15.00 },
-          { "prescriptionId": 2, "doseG": 10.00 }
-        ]
-      }
-    ]
-  },
-  "traceId": "..."
-}
-```
+该脚本会：
+1. 创建 3 个药材 (A, B, C)
+2. 创建 2 个药方 (P1, P2)
+3. 执行 Merge 操作
+4. 输出结果供检查 (应显示 SMOKE TEST PASSED)
 
 ---
 
-## 📂 工程结构
+## 🔌 核心接口说明 (Core APIs)
+
+Base Path: `/api/v1`
+
+| 资源 | 方法 | 路径 | 描述 |
+| :--- | :--- | :--- | :--- |
+| **Herbs** | GET | `/herbs` | 列表查询 (支持 keyword) |
+| | POST | `/herbs` | 新增药材 |
+| | PUT | `/herbs/{id}` | 修改药材 |
+| | DELETE| `/herbs/{id}` | 软删除 |
+| **Prescriptions** | POST | `/prescriptions` | 新增药方 (含 items) |
+| | POST | `/prescriptions/merge` | **合并药方** (核心) |
+
+**合并规则说明**：
+请求体：`{ "prescriptionIds": [1, 2] }`
+如果 药方1 含 黄芪 10g，药方2 含 黄芪 15g。
+合并结果为 **黄芪 15g** (取 MAX，不相加)。
+
+---
+
+## 🔐 配置文件说明
+
+敏感配置不会提交到 git。
+*   `application.yml`: 通用配置
+*   `application-dev.yml`: 本地开发配置 (已加入 .ignore)
+*   `application-dev.example.yml`:配置示例 (ENV 变量版)
+
+如果你不使用 Docker，需连接自己的 MySQL，请修改 `application-dev.yml` (或新建) 覆盖 `DB_USER` / `DB_PASS`。
+
+---
+
+## 📂 目录结构
 
 ```
-src/main/java/com/tcm/prescription
-├── common       # 通用结果封装 Result, ErrorCode
-├── config       # Swagger及过滤器配置
-├── controller   # 接口层
-├── dto          # 数据传输对象 (Request/Response)
-├── entity       # 数据库实体 (JPA)
-├── exception    # 全局异常处理
-├── repository   # 数据访问层 (DAO)
-└── service      # 业务逻辑层
+ljc-tcm-prescription-service
+├── src
+│   └── main/java/com/tcm/prescription
+│       ├── controller   # 接口
+│       ├── service      # 业务逻辑 (Merge 逻辑在这里)
+│       └── entity       # 数据库实体
+├── sql
+│   └── schema.sql       # 建表脚本 (Docker会自动挂载)
+├── scripts
+│   └── smoke-test.sh    # 一键验证脚本
+├── docker-compose.yml   # MySQL 容器配置
+└── pom.xml
 ```
-
-## ⚠️ 注意事项
-
-*   所有克重单位均为 **g (克)**，数据库存储类型为 `DECIMAL(10,2)`。
-*   删除操作均为**软删除**，数据保留在数据库中，字段 `deleted_at` 不为空。
-*   多方合并时，如果某药材在多个方子中出现，**只取最大值**，不会累加。
-

@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="form-section">
+    <view class="form-item">
+      <text class="label">Prescription Name *</text>
+      <input class="input" placeholder="Enter name" model:value="{{form.name}}" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">Description</text>
+      <textarea class="textarea" placeholder="Enter description" model:value="{{form.description}}" maxlength="200" />
+    </view>
+  </view>
+
+  <!-- Herb List -->
+  <view class="section-title">
+    <text>Herb Items ({{items.length}})</text>
+    <button size="mini" type="primary" bindtap="onAddHerb">+ Add Herb</button>
+  </view>
+
+  <view class="herb-list">
+    <block wx:if="{{items.length > 0}}">
+      <view class="herb-item" wx:for="{{items}}" wx:key="index">
+        <view class="herb-info">
+          <text class="herb-name">{{item.herbName}}</text>
+          <view class="dose-input-group">
+            <input class="dose-input" type="digit" placeholder="Dose" value="{{item.dose_g}}" data-index="{{index}}" bindinput="onDoseChange" />
+            <text class="unit">g</text>
+          </view>
+        </view>
+        <view class="herb-remove" data-index="{{index}}" bindtap="onRemoveHerb">×</view>
+      </view>
+    </block>
+    <view wx:else class="empty-hint">No herbs added yet. Click "Add Herb" to start.</view>
+  </view>
+
+  <!-- Save Button -->
+  <view class="save-btn-container">
+    <button type="primary" bindtap="onSave">Save Prescription</button>
+  </view>
+
+  <!-- Herb Selector Modal -->
+  <view class="modal-overlay" wx:if="{{showHerbSelector}}">
+    <view class="modal-content">
+      <view class="modal-title">Select Herb</view>
+      
+      <view class="modal-search">
+        <input class="search-input" placeholder="Search herbs..." model:value="{{herbKeyword}}" bindinput="onHerbSearch" />
+      </view>
+
+      <scroll-view scroll-y class="herb-select-list">
+        <view class="herb-select-item" wx:for="{{availableHerbs}}" wx:key="id" data-herb="{{item}}" bindtap="onSelectHerb">
+          <text class="herb-select-name">{{item.name_cn}}</text>
+          <text class="herb-select-dose">Default: {{item.default_dose_g || 0}}g</text>
+        </view>
+      </scroll-view>
+
+      <view class="modal-buttons">
+        <button size="mini" bindtap="onCancelHerbSelect">Cancel</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,17 @@
+# WeChat Mini Program
+.DS_Store
+node_modules/
+dist/
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# WeChat DevTools
+project.private.config.json

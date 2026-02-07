@@ -1,0 +1,29 @@
+<view class="container">
+  <!-- Search -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="Search Prescriptions (Name)" bindinput="onSearchInput" value="{{keyword}}" confirm-type="search" bindconfirm="onSearch" />
+    <view class="search-btn" bindtap="onSearch">Search</view>
+  </view>
+
+  <!-- List -->
+  <scroll-view scroll-y class="list-container" style="height: calc(100vh - 120rpx);">
+    <block wx:if="{{prescriptions.length > 0}}">
+      <view class="card" wx:for="{{prescriptions}}" wx:key="id">
+        <view class="card-header">
+          <text class="prescription-name">{{item.name}}</text>
+        </view>
+        <view class="card-body">
+          <text class="info-text">Herbs: {{item.herbCount || 0}} | Updated: {{item.updated_at}}</text>
+        </view>
+        <view class="card-actions">
+          <button size="mini" type="default" data-id="{{item.id}}" bindtap="onEdit">Edit</button>
+          <button size="mini" type="warn" data-id="{{item.id}}" bindtap="onDelete">Delete</button>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty-state">No prescriptions found.</view>
+  </scroll-view>
+
+  <!-- Floating Add Button -->
+  <view class="fab" bindtap="onAdd">+</view>
+</view>
