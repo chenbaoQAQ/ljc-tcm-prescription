@@ -1,11 +1,20 @@
+// pages/home/index.js
 Page({
-  navToHerbList() {
-    wx.navigateTo({ url: '/pages/herb/list' })
+  goToCreateMedical() {
+    wx.navigateTo({
+      url: '/pages/medical/create'
+    });
   },
-  navToPrescriptionList() {
-    wx.navigateTo({ url: '/pages/prescription/list' })
+
+  goToPrescriptionList() {
+    wx.navigateTo({
+      url: '/pages/prescription/list'
+    });
   },
-  navToMerge() {
-    wx.navigateTo({ url: '/pages/merge/index' })
+
+  goToHerbList() {
+    wx.navigateTo({
+      url: '/pages/herb/list'
+    });
   }
-})
+});

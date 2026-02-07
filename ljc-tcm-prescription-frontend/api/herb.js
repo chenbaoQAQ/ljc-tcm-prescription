@@ -1,15 +1,38 @@
 const request = require('../utils/request.js');
 
+/**
+ * 药材库 API
+ */
 module.exports = {
-    // Get all herbs (with optional search)
-    getHerbs: (keyword = '') => request.get('/herbs', { keyword }),
+    /**
+     * 获取药材列表
+     */
+    getHerbs: (keyword = '', page = 1, size = 50) => {
+        return request({
+            url: '/api/v1/herbs',
+            method: 'GET',
+            params: { keyword, page, size }
+        });
+    },
 
-    // Create herb
-    createHerb: (data) => request.post('/herbs', data),
+    /**
+     * 新增药材
+     */
+    createHerb: (nameCn) => {
+        return request({
+            url: '/api/v1/herbs',
+            method: 'POST',
+            data: { nameCn }
+        });
+    },
 
-    // Update herb
-    updateHerb: (id, data) => request.put(`/herbs/${id}`, data),
-
-    // Delete herb
-    deleteHerb: (id) => request.del(`/herbs/${id}`)
+    /**
+     * 删除药材
+     */
+    deleteHerb: (id) => {
+        return request({
+            url: `/api/v1/herbs/${id}`,
+            method: 'DELETE'
+        });
+    }
 };

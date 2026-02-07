@@ -1,22 +1,23 @@
 <view class="container">
   <view class="header">
-    <text class="title">TCM Prescription Manager</text>
+    <text class="title">中医病历助手</text>
+    <text class="subtitle">您的专属中医助手</text>
   </view>
-  
+
   <view class="menu-list">
-    <view class="menu-item" bindtap="navToHerbList">
-      <text>Managed Herbs (药材库)</text>
-      <text class="arrow">></text>
-    </view>
-    
-    <view class="menu-item" bindtap="navToPrescriptionList">
-      <text>Manage Prescriptions (药方库)</text>
-      <text class="arrow">></text>
-    </view>
-    
-    <view class="menu-item highlight" bindtap="navToMerge">
-      <text>Merge Prescriptions (合并开方)</text>
-      <text class="arrow">></text>
-    </view>
+    <button class="menu-btn primary" bindtap="goToCreateMedical">
+      <text class="menu-icon">📋</text>
+      <text class="menu-text">开病历</text>
+    </button>
+
+    <button class="menu-btn" bindtap="goToPrescriptionList">
+      <text class="menu-icon">💊</text>
+      <text class="menu-text">制作药方</text>
+    </button>
+
+    <button class="menu-btn" bindtap="goToHerbList">
+      <text class="menu-icon">🌿</text>
+      <text class="menu-text">药材库</text>
+    </button>
   </view>
 </view>

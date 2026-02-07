@@ -1,33 +1,51 @@
-const baseUrl = 'http://localhost:8080/api/v1';
+const { BASE_URL } = require('../config/env.js');
 
-const request = (url, method, data) => {
+/**
+ * 统一请求封装
+ * 后端返回格式: { code: 0, message: "success", data: {...}, traceId: "..." }
+ * code === 0 表示成功，否则失败
+ */
+const request = ({ url, method = 'GET', data = null, params = null }) => {
   return new Promise((resolve, reject) => {
+    // 处理 GET 请求的 query params
+    let finalUrl = BASE_URL + url;
+    if (params && method === 'GET') {
+      const queryString = Object.keys(params)
+        .filter(key => params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .join('&');
+      if (queryString) {
+        finalUrl += (finalUrl.includes('?') ? '&' : '?') + queryString;
+      }
+    }
+
     wx.request({
-      url: `${baseUrl}${url}`,
+      url: finalUrl,
       method: method,
-      data: data,
+      data: method !== 'GET' ? data : undefined,
       header: {
         'content-type': 'application/json'
       },
+      timeout: 10000,
       success: (res) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          const { code, message, data } = res.data;
-          // Assuming backend returns { code: 0, message: "...", data: ... } for success
-          // If the backend strictly follows the description "code != 0弹toast", we handle it here.
-          // Note: Some backends might just return data directly or have different structure.
-          // The user said: "code != 0 弹 toast 显示 message"
-          if (typeof code !== 'undefined' && code !== 0) {
-            wx.showToast({
-              title: message || 'Error',
-              icon: 'none'
-            });
-            reject(res.data);
+          const { code, message, data: responseData } = res.data;
+
+          // 只有 code === 0 才认为成功
+          if (code === 0) {
+            resolve(responseData);
           } else {
-            resolve(res.data);
+            // 失败时 toast 提示
+            wx.showToast({
+              title: message || '请求失败',
+              icon: 'none',
+              duration: 2000
+            });
+            reject({ code, message, data: responseData });
           }
         } else {
           wx.showToast({
-            title: `HTTP Error: ${res.statusCode}`,
+            title: `服务器错误 ${res.statusCode}`,
             icon: 'none'
           });
           reject(res);
@@ -35,8 +53,9 @@ const request = (url, method, data) => {
       },
       fail: (err) => {
         wx.showToast({
-          title: 'Network Error',
-          icon: 'none'
+          title: '网络错误/后端未启动',
+          icon: 'none',
+          duration: 2000
         });
         reject(err);
       }
@@ -44,14 +63,4 @@ const request = (url, method, data) => {
   });
 };
 
-const get = (url, data) => request(url, 'GET', data);
-const post = (url, data) => request(url, 'POST', data);
-const put = (url, data) => request(url, 'PUT', data);
-const del = (url, data) => request(url, 'DELETE', data);
-
-module.exports = {
-  get,
-  post,
-  put,
-  del
-};
+module.exports = request;

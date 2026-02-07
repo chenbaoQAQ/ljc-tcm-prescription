@@ -1,112 +1,93 @@
-const api = require('../../api/herb.js');
+// pages/herb/list.js
+const herbApi = require('../../api/herb.js');
 
 Page({
   data: {
-    herbs: [],
-    keyword: '',
-    showEditor: false,
-    isEdit: false,
-    editForm: {
-      id: null,
-      name_cn: '',
-      unit: 'g',
-      default_dose_g: '',
-      status: 1
-    }
+    newHerbName: '',
+    herbs: []
   },
 
   onShow() {
     this.loadHerbs();
   },
 
+  /**
+   * 加载药材列表
+   */
   loadHerbs() {
-    api.getHerbs(this.data.keyword)
+    herbApi.getHerbs('', 1, 200)
       .then(res => {
-        this.setData({ herbs: res.data.content || [] });
+        this.setData({
+          herbs: res.content || []
+        });
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error('加载药材失败', err);
+      });
   },
 
-  onSearchInput(e) {
-    this.setData({ keyword: e.detail.value });
-  },
-
-  onSearch() {
-    this.loadHerbs();
-  },
-
-  onAdd() {
+  /**
+   * 新药材名称输入
+   */
+  onNewHerbInput(e) {
     this.setData({
-      showEditor: true,
-      isEdit: false,
-      editForm: {
-        id: null,
-        name_cn: '',
-        unit: 'g',
-        default_dose_g: '', // Ensure string or number handled correctly
-        status: 1
-      }
+      newHerbName: e.detail.value
     });
   },
 
-  onEdit(e) {
-    const item = e.currentTarget.dataset.item;
-    this.setData({
-      showEditor: true,
-      isEdit: true,
-      editForm: {
-        id: item.id,
-        name_cn: item.name_cn,
-        unit: item.unit,
-        default_dose_g: item.default_dose_g,
-        status: item.status
-      }
-    });
-  },
+  /**
+   * 添加药材
+   */
+  onAddHerb() {
+    const { newHerbName } = this.data;
 
-  onDelete(e) {
-    const id = e.currentTarget.dataset.id;
-    wx.showModal({
-      title: 'Confirm Delete',
-      content: 'Are you sure you want to delete this herb?',
-      success: (res) => {
-        if (res.confirm) {
-          api.deleteHerb(id).then(() => {
-            wx.showToast({ title: 'Deleted', icon: 'success' });
-            this.loadHerbs();
-          });
-        }
-      }
-    });
-  },
-
-  onCancelEdit() {
-    this.setData({ showEditor: false });
-  },
-
-  onStatusChange(e) {
-    this.setData({
-      'editForm.status': e.detail.value ? 1 : 0
-    });
-  },
-
-  onSave() {
-    const form = this.data.editForm;
-
-    // Validation
-    if (!form.name_cn) {
-      wx.showToast({ title: 'Name required', icon: 'none' });
+    if (!newHerbName || !newHerbName.trim()) {
+      wx.showToast({
+        title: '请输入药材名称',
+        icon: 'none'
+      });
       return;
     }
 
-    const promise = this.data.isEdit
-      ? api.updateHerb(form.id, form)
-      : api.createHerb(form);
+    herbApi.createHerb(newHerbName.trim())
+      .then(() => {
+        wx.showToast({
+          title: '添加成功',
+          icon: 'success'
+        });
+        this.setData({ newHerbName: '' });
+        this.loadHerbs();
+      })
+      .catch(err => {
+        console.error('添加失败', err);
+      });
+  },
 
-    promise.then(() => {
-      wx.showToast({ title: 'Saved', icon: 'success' });
-      this.setData({ showEditor: false });
-      this.loadHerbs();
+  /**
+   * 删除药材
+   */
+  onDelete(e) {
+    const id = e.currentTarget.dataset.id;
+    const name = e.currentTarget.dataset.name;
+
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除药材"${name}"吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          herbApi.deleteHerb(id)
+            .then(() => {
+              wx.showToast({
+                title: '已删除',
+                icon: 'success'
+              });
+              this.loadHerbs();
+            })
+            .catch(err => {
+              console.error('删除失败', err);
+            });
+        }
+      }
     });
   }
 });

@@ -1,62 +1,72 @@
-const api = require('../../api/prescription.js');
+// pages/prescription/list.js
+const prescriptionApi = require('../../api/prescription.js');
 
 Page({
   data: {
-    prescriptions: [],
-    keyword: ''
+    prescriptions: []
   },
 
   onShow() {
     this.loadPrescriptions();
   },
 
+  /**
+   * 加载药方列表
+   */
   loadPrescriptions() {
-    api.getPrescriptions(this.data.keyword)
+    prescriptionApi.getPrescriptions('', 1, 100)
       .then(res => {
-        const prescriptions = (res.data.content || []).map(item => ({
-          ...item,
-          herbCount: item.itemCount || 0,
-          updated_at: this.formatDate(item.updatedAt)
-        }));
-        this.setData({ prescriptions });
+        this.setData({
+          prescriptions: res.content || []
+        });
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error('加载药方失败', err);
+      });
   },
 
-  formatDate(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  },
-
-  onSearchInput(e) {
-    this.setData({ keyword: e.detail.value });
-  },
-
-  onSearch() {
-    this.loadPrescriptions();
-  },
-
+  /**
+   * 新建药方
+   */
   onAdd() {
-    wx.navigateTo({ url: '/pages/prescription/edit' });
+    wx.navigateTo({
+      url: '/pages/prescription/edit'
+    });
   },
 
+  /**
+   * 编辑药方
+   */
   onEdit(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: `/pages/prescription/edit?id=${id}` });
+    wx.navigateTo({
+      url: `/pages/prescription/edit?id=${id}`
+    });
   },
 
+  /**
+   * 删除药方
+   */
   onDelete(e) {
     const id = e.currentTarget.dataset.id;
+    const name = e.currentTarget.dataset.name;
+
     wx.showModal({
-      title: 'Confirm Delete',
-      content: 'Are you sure you want to delete this prescription?',
+      title: '确认删除',
+      content: `确定要删除药方"${name}"吗？`,
       success: (res) => {
         if (res.confirm) {
-          api.deletePrescription(id).then(() => {
-            wx.showToast({ title: 'Deleted', icon: 'success' });
-            this.loadPrescriptions();
-          });
+          prescriptionApi.deletePrescription(id)
+            .then(() => {
+              wx.showToast({
+                title: '已删除',
+                icon: 'success'
+              });
+              this.loadPrescriptions();
+            })
+            .catch(err => {
+              console.error('删除失败', err);
+            });
         }
       }
     });

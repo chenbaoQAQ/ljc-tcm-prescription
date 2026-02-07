@@ -1,0 +1,66 @@
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="输入患者姓名搜索" value="{{patientName}}" bindinput="onNameInput" />
+    <button class="search-btn" type="primary" bindtap="onSearch">搜索</button>
+  </view>
+
+  <!-- 病历列表 -->
+  <view class="record-list">
+    <view wx:if="{{records.length > 0}}">
+      <view class="record-item" wx:for="{{records}}" wx:key="id" bindtap="onRecordTap" data-item="{{item}}">
+        <view class="record-header">
+          <text class="patient-name">{{item.patientName}}</text>
+          <text class="visit-date">{{item.visitDate}}</text>
+        </view>
+        
+        <view class="record-body">
+          <view class="info-row">
+            <text class="label">药方：</text>
+            <text class="value">{{item.prescriptionNames}}</text>
+          </view>
+          
+          <view class="info-row herbs">
+            <text class="label">所需药材：</text>
+            <text class="value">{{item.mergedHerbsText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <text wx:if="{{searched}}">未找到相关病历</text>
+      <text wx:else>请输入患者姓名并搜索</text>
+    </view>
+  </view>
+</view>
+
+<!-- 详情弹窗（点击查看完整信息） -->
+<view class="modal-mask" wx:if="{{showDetailModal}}" bindtap="onCloseDetail">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-title">病历详情</view>
+    
+    <view class="detail-item">
+      <text class="detail-label">患者：</text>
+      <text>{{selectedRecord.patientName}}</text>
+    </view>
+    
+    <view class="detail-item">
+      <text class="detail-label">日期：</text>
+      <text>{{selectedRecord.visitDate}}</text>
+    </view>
+    
+    <view class="detail-item">
+      <text class="detail-label">药方：</text>
+      <text>{{selectedRecord.prescriptionNames}}</text>
+    </view>
+    
+    <view class="detail-item full">
+      <text class="detail-label">所需药材：</text>
+      <text class="herbs-text">{{selectedRecord.mergedHerbsText}}</text>
+    </view>
+
+    <button class="copy-btn" type="primary" bindtap="onCopy">复制药材清单</button>
+    <button class="close-btn" bindtap="onCloseDetail">关闭</button>
+  </view>
+</view>

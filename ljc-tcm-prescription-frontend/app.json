@@ -1,16 +1,16 @@
 {
   "pages": [
     "pages/home/index",
-    "pages/herb/list",
+    "pages/medical/create",
+    "pages/medical/list",
     "pages/prescription/list",
     "pages/prescription/edit",
-    "pages/merge/index",
-    "pages/merge/result"
+    "pages/herb/list"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "TCM Prescription",
+    "navigationBarTitleText": "中医病历助手",
     "navigationBarTextStyle": "black"
   },
   "style": "v2",

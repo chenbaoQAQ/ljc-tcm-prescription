@@ -1,21 +1,60 @@
 const request = require('../utils/request.js');
 
+/**
+ * 药方库 API
+ */
 module.exports = {
-    // Get all prescriptions (with optional search)
-    getPrescriptions: (keyword = '') => request.get('/prescriptions', { keyword }),
+    /**
+     * 获取药方列表
+     */
+    getPrescriptions: (keyword = '', page = 1, size = 50) => {
+        return request({
+            url: '/api/v1/prescriptions',
+            method: 'GET',
+            params: { keyword, page, size }
+        });
+    },
 
-    // Get single prescription detail
-    getPrescription: (id) => request.get(`/prescriptions/${id}`),
+    /**
+     * 获取药方详情
+     */
+    getPrescription: (id) => {
+        return request({
+            url: `/api/v1/prescriptions/${id}`,
+            method: 'GET'
+        });
+    },
 
-    // Create prescription
-    createPrescription: (data) => request.post('/prescriptions', data),
+    /**
+     * 新建药方
+     * data: { name, items: [{ herbId, doseG }] }
+     */
+    createPrescription: (data) => {
+        return request({
+            url: '/api/v1/prescriptions',
+            method: 'POST',
+            data
+        });
+    },
 
-    // Update prescription
-    updatePrescription: (id, data) => request.put(`/prescriptions/${id}`, data),
+    /**
+     * 更新药方
+     */
+    updatePrescription: (id, data) => {
+        return request({
+            url: `/api/v1/prescriptions/${id}`,
+            method: 'PUT',
+            data
+        });
+    },
 
-    // Delete prescription
-    deletePrescription: (id) => request.del(`/prescriptions/${id}`),
-
-    // Merge prescriptions
-    mergePrescriptions: (ids) => request.post('/prescriptions/merge', { prescriptionIds: ids })
+    /**
+     * 删除药方
+     */
+    deletePrescription: (id) => {
+        return request({
+            url: `/api/v1/prescriptions/${id}`,
+            method: 'DELETE'
+        });
+    }
 };

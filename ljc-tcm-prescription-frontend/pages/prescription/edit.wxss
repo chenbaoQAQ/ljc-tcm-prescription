@@ -1,182 +1,83 @@
 /* pages/prescription/edit.wxss */
-.form-section {
-  background: white;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-}
-
-.form-item {
-  margin-bottom: 30rpx;
-}
-
-.label {
-  display: block;
-  font-size: 28rpx;
-  color: #333;
-  margin-bottom: 10rpx;
-  font-weight: 500;
-}
-
-.input, .textarea {
-  width: 100%;
-  border: 1rpx solid #ddd;
-  padding: 10rpx 15rpx;
-  border-radius: 8rpx;
-  font-size: 30rpx;
-  box-sizing: border-box;
-}
-
-.textarea {
-  height: 120rpx;
-}
-
 .section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx;
-  font-weight: bold;
   font-size: 32rpx;
+  font-weight: bold;
+  margin: 30rpx 0 20rpx;
 }
 
-.herb-list {
+.add-item-btn {
+  padding: 8rpx 20rpx;
+  font-size: 28rpx;
+}
+
+.items-list {
+  min-height: 400rpx;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
   background: white;
   padding: 20rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 15rpx;
+  border-radius: 12rpx;
 }
 
-.herb-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.herb-item:last-child {
-  border-bottom: none;
-}
-
-.herb-info {
+.herb-picker {
   flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  min-width: 0;
 }
 
-.herb-name {
+.picker-display {
+  padding: 15rpx 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
   font-size: 30rpx;
-  font-weight: 500;
-}
-
-.dose-input-group {
-  display: flex;
-  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dose-input {
-  width: 120rpx;
-  border: 1rpx solid #ddd;
-  padding: 8rpx 12rpx;
+  width: 140rpx;
+  padding: 15rpx 20rpx;
+  border: 2rpx solid #e0e0e0;
   border-radius: 8rpx;
   text-align: right;
-  margin-right: 10rpx;
+  font-size: 30rpx;
 }
 
 .unit {
+  font-size: 28rpx;
   color: #666;
+  width: 30rpx;
 }
 
-.herb-remove {
-  width: 50rpx;
-  height: 50rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fa5151;
-  font-size: 50rpx;
-  font-weight: bold;
-  margin-left: 20rpx;
+.delete-btn {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0;
+  background: #ff4d4f;
+  color: white;
+  font-size: 40rpx;
+  border-radius: 50%;
 }
 
 .empty-hint {
-  text-align: center;
-  padding: 60rpx 0;
+ text-align: center;
+  padding: 100rpx 0;
   color: #999;
-  font-size: 28rpx;
-}
-
-.save-btn-container {
-  padding: 20rpx;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal-content {
-  width: 85%;
-  max-height: 80vh;
-  background: white;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  margin-bottom: 20rpx;
-  text-align: center;
-}
-
-.modal-search {
-  margin-bottom: 20rpx;
-}
-
-.search-input {
-  width: 100%;
-  background: #f5f5f5;
-  padding: 10rpx 20rpx;
-  border-radius: 30rpx;
-  font-size: 28rpx;
-}
-
-.herb-select-list {
-  max-height: 400rpx;
-  margin-bottom: 20rpx;
-}
-
-.herb-select-item {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.herb-select-name {
   font-size: 30rpx;
-  font-weight: 500;
 }
 
-.herb-select-dose {
-  font-size: 26rpx;
-  color: #999;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: center;
+.save-btn {
+  width: 100%;
+  font-size: 36rpx;
+  padding: 30rpx;
+  margin-top: 40rpx;
 }

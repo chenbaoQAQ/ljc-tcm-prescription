@@ -1,62 +1,43 @@
 <view class="container">
-  <view class="form-section">
+  <!-- 药方名称 -->
+  <view class="card">
     <view class="form-item">
-      <text class="label">Prescription Name *</text>
-      <input class="input" placeholder="Enter name" model:value="{{form.name}}" />
-    </view>
-
-    <view class="form-item">
-      <text class="label">Description</text>
-      <textarea class="textarea" placeholder="Enter description" model:value="{{form.description}}" maxlength="200" />
+      <view class="form-label">药方名称 *</view>
+      <input class="form-input" placeholder="请输入药方名称" value="{{name}}" bindinput="onNameInput" />
     </view>
   </view>
 
-  <!-- Herb List -->
+  <!-- 药材明细 -->
   <view class="section-title">
-    <text>Herb Items ({{items.length}})</text>
-    <button size="mini" type="primary" bindtap="onAddHerb">+ Add Herb</button>
+    <text>药材明细（至少1味）</text>
+    <button class="add-item-btn" size="mini" type="primary" bindtap="onAddItem">+ 添加药材</button>
   </view>
 
-  <view class="herb-list">
-    <block wx:if="{{items.length > 0}}">
-      <view class="herb-item" wx:for="{{items}}" wx:key="index">
-        <view class="herb-info">
-          <text class="herb-name">{{item.herbName}}</text>
-          <view class="dose-input-group">
-            <input class="dose-input" type="digit" placeholder="Dose" value="{{item.dose_g}}" data-index="{{index}}" bindinput="onDoseChange" />
-            <text class="unit">g</text>
+  <view class="items-list">
+    <view wx:if="{{items.length > 0}}">
+      <view class="item-row" wx:for="{{items}}" wx:key="index" wx:for-index="idx">
+        <!-- 药材选择器 -->
+        <picker class="herb-picker" range="{{herbs}}" range-key="nameCn" value="{{item.herbIndex}}" bindchange="onHerbChange" data-idx="{{idx}}">
+          <view class="picker-display">
+            {{item.herbName || '选择药材'}}
           </view>
-        </view>
-        <view class="herb-remove" data-index="{{index}}" bindtap="onRemoveHerb">×</view>
-      </view>
-    </block>
-    <view wx:else class="empty-hint">No herbs added yet. Click "Add Herb" to start.</view>
-  </view>
+        </picker>
 
-  <!-- Save Button -->
-  <view class="save-btn-container">
-    <button type="primary" bindtap="onSave">Save Prescription</button>
-  </view>
+        <!-- 克重输入 -->
+        <input class="dose-input" type="digit" placeholder="克重" value="{{item.doseG}}" bindinput="onDoseInput" data-idx="{{idx}}" />
+        
+        <text class="unit">g</text>
 
-  <!-- Herb Selector Modal -->
-  <view class="modal-overlay" wx:if="{{showHerbSelector}}">
-    <view class="modal-content">
-      <view class="modal-title">Select Herb</view>
-      
-      <view class="modal-search">
-        <input class="search-input" placeholder="Search herbs..." model:value="{{herbKeyword}}" bindinput="onHerbSearch" />
-      </view>
-
-      <scroll-view scroll-y class="herb-select-list">
-        <view class="herb-select-item" wx:for="{{availableHerbs}}" wx:key="id" data-herb="{{item}}" bindtap="onSelectHerb">
-          <text class="herb-select-name">{{item.name_cn}}</text>
-          <text class="herb-select-dose">Default: {{item.default_dose_g || 0}}g</text>
-        </view>
-      </scroll-view>
-
-      <view class="modal-buttons">
-        <button size="mini" bindtap="onCancelHerbSelect">Cancel</button>
+        <!-- 删除按钮 -->
+        <button class="delete-btn" size="mini" bindtap="onDeleteItem" data-idx="{{idx}}">×</button>
       </view>
     </view>
+
+    <view wx:else class="empty-hint">
+      点击"+ 添加药材"开始配方
+    </view>
   </view>
+
+  <!-- 保存按钮 -->
+  <button class="save-btn" type="primary" bindtap="onSave">保存药方</button>
 </view>

@@ -1,62 +1,28 @@
 <view class="container">
-  <!-- Search -->
-  <view class="search-bar">
-    <input class="search-input" placeholder="Search Herbs (Name)" bindinput="onSearchInput" value="{{keyword}}" confirm-type="search" bindconfirm="onSearch" />
-    <view class="search-btn" bindtap="onSearch">Search</view>
+  <!-- 新增药材 -->
+  <view class="card">
+    <view class="form-item">
+      <view class="form-label">新增药材</view>
+      <view class="add-herb-row">
+        <input class="form-input" placeholder="输入药材名称" value="{{newHerbName}}" bindinput="onNewHerbInput" confirm-type="done" bindconfirm="onAddHerb" />
+        <button class="add-btn" type="primary" bindtap="onAddHerb">添加</button>
+      </view>
+    </view>
   </view>
 
-  <!-- List -->
-  <scroll-view scroll-y class="list-container" style="height: calc(100vh - 120rpx);">
-    <block wx:if="{{herbs.length > 0}}">
-      <view class="card" wx:for="{{herbs}}" wx:key="id">
-        <view class="card-header">
-          <text class="herb-name">{{item.name_cn}}</text>
-          <text class="herb-status {{item.status == 1 ? 'active' : 'inactive'}}">{{item.status == 1 ? 'Active' : 'Disabled'}}</text>
-        </view>
-        <view class="card-body">
-          <text>Default Dose: {{item.default_dose_g || 0}} {{item.unit}}</text>
-        </view>
-        <view class="card-actions">
-          <button size="mini" type="default" data-item="{{item}}" bindtap="onEdit">Edit</button>
-          <button size="mini" type="warn" data-id="{{item.id}}" bindtap="onDelete">Delete</button>
-        </view>
-      </view>
-    </block>
-    <view wx:else class="empty-state">No herbs found.</view>
-  </scroll-view>
+  <!-- 药材列表 -->
+  <view class="section-title">药材库</view>
 
-  <!-- Floating Add Button -->
-  <view class="fab" bindtap="onAdd">+</view>
-
-  <!-- Editor Modal Overlay -->
-  <view class="modal-overlay" wx:if="{{showEditor}}">
-    <view class="modal-content">
-      <view class="modal-title">{{isEdit ? 'Edit Herb' : 'Add Herb'}}</view>
-      
-      <view class="form-item">
-        <text class="label">Name (CN)</text>
-        <input class="input" placeholder="Name" model:value="{{editForm.name_cn}}" />
+  <view class="herb-list">
+    <view wx:if="{{herbs.length > 0}}">
+      <view class="herb-item" wx:for="{{herbs}}" wx:key="id">
+        <text class="herb-name">{{item.nameCn}}</text>
+        <button class="delete-btn" size="mini" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.nameCn}}">删除</button>
       </view>
+    </view>
 
-      <view class="form-item">
-        <text class="label">Unit</text>
-        <input class="input" placeholder="Unit (g)" model:value="{{editForm.unit}}" />
-      </view>
-
-      <view class="form-item">
-        <text class="label">Def. Dose (g)</text>
-        <input class="input" placeholder="0.00" type="digit" model:value="{{editForm.default_dose_g}}" />
-      </view>
-
-      <view class="form-item">
-        <text class="label">Status</text>
-        <switch checked="{{editForm.status == 1}}" bindchange="onStatusChange" />
-      </view>
-
-      <view class="modal-buttons">
-        <button size="mini" bindtap="onCancelEdit">Cancel</button>
-        <button size="mini" type="primary" bindtap="onSave">Save</button>
-      </view>
+    <view wx:else class="empty-state">
+      暂无药材，请先添加
     </view>
   </view>
 </view>
