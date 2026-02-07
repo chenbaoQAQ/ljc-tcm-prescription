@@ -1,0 +1,25 @@
+cat > .gitignore << 'EOF'
+# ===== macOS =====
+.DS_Store
+
+# ===== IntelliJ / JetBrains =====
+.idea/
+*.iml
+
+# ===== Node =====
+node_modules/
+dist/
+.vite/
+.next/
+out/
+
+# ===== Java =====
+**/target/
+**/*.log
+
+# ===== Env =====
+.env
+.env.*
+application-*.yml
+
+EOF
