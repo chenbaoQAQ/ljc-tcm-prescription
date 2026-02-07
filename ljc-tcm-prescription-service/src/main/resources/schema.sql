@@ -1,7 +1,7 @@
 -- Database Initialization
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS `tcm_prescription` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `tcm_prescription`;
+CREATE DATABASE IF NOT EXISTS `ljc_tcm_prescription` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `ljc_tcm_prescription`;
 
 -- 1. Herbs Table (药材库)
 CREATE TABLE IF NOT EXISTS `herbs` (
