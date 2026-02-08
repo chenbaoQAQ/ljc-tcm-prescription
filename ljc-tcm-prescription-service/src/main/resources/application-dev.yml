@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    # Database Configuration
+    # 默认连接本地 MySQL，数据库名 ljc_tcm_prescription
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ljc_tcm_prescription}?useUnicode=true&characterEncoding=utf-8&failOverReadOnly=false&autoReconnect=true
+    username: ${DB_USER:root}
+    password: ${DB_PASS:}  # 请设置环境变量 DB_PASS 或在此填写您的 MySQL 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# H2 (Optional)
+  h2:
+    console:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    com.tcm.prescription: DEBUG
+    org.springframework.web: INFO
