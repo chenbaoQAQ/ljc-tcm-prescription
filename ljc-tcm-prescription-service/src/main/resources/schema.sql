@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `medical_records` (
     `prescription_ids_json` TEXT NOT NULL COMMENT 'Selected Prescription IDs JSON (选中的药方ID列表)',
     `prescription_names_snapshot` VARCHAR(512) NOT NULL COMMENT 'Prescription Names Snapshot (药方名快照，逗号分隔)',
     `merged_herbs_json` MEDIUMTEXT NOT NULL COMMENT 'Merged Herbs Snapshot JSON (合并后的药材清单快照)',
+    `notes` TEXT NULL COMMENT 'Notes (备注)',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` DATETIME NULL COMMENT 'Soft Delete Timestamp (软删除时间)',

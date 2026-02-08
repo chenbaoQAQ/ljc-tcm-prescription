@@ -66,9 +66,9 @@
                 }
 
                 listEl.innerHTML = list.map(item => `
-                    <div class="card" onclick="viewDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                        <div class="list-item" style="border:none; padding:10px 0;">
-                            <div>
+                    <div class="card">
+                        <div class="list-item" style="border:none; padding:10px 0;" onclick="viewDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                            <div style="flex:1;">
                                 <h4 class="list-title" style="margin-bottom:5px;">${item.patientName} <span style="font-size:14px;color:#999;font-weight:normal;">(${formatDate(item.visitDate)})</span></h4>
                                 <p class="list-subtitle">药方：${item.prescriptionNames}</p>
                             </div>
@@ -77,6 +77,7 @@
                         <div class="highlight-box" style="margin-top:10px; font-size:14px; color:#666;">
                             ${item.mergedHerbsText}
                         </div>
+                        <button class="btn btn-sm btn-danger" style="margin-top:10px;" onclick="event.stopPropagation(); deleteRecord(${item.id}, '${item.patientName}')">删除记录</button>
                     </div>
                 `).join('');
             } catch (err) {
@@ -84,11 +85,28 @@
             }
         }
 
+        async function deleteRecord(id, patientName) {
+            if (!confirm(`确定要删除患者"${patientName}"的这条病历吗？`)) {
+                return;
+            }
+
+            try {
+                await api.deleteMedicalRecord(id);
+                showToast('已删除');
+                search(); // Reload list
+            } catch (err) {
+                // Error handled in api.js
+            }
+        }
+
         function viewDetail(item) {
+            const notesHtml = item.notes ? `<p><strong>备注：</strong>${item.notes.replace(/\n/g, '<br>')}</p>` : '';
+
             showModal('病历详情', `
                 <p><strong>患者：</strong>${item.patientName}</p>
                 <p><strong>日期：</strong>${formatDate(item.visitDate)}</p>
                 <p><strong>药方：</strong>${item.prescriptionNames}</p>
+                ${notesHtml}
                 <div class="highlight-box">${item.mergedHerbsText}</div>
                 <button class="btn btn-sm" onclick="copyToClipboard('${item.mergedHerbsText}')">📄 复制药材清单</button>
             `);

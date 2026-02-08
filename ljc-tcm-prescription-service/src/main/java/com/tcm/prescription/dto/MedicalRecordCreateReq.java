@@ -22,4 +22,6 @@ public class MedicalRecordCreateReq {
 
     @NotEmpty(message = "Prescription IDs cannot be empty")
     private List<@Positive(message = "Prescription ID must be positive") Long> prescriptionIds;
+
+    private String notes; // Optional notes
 }

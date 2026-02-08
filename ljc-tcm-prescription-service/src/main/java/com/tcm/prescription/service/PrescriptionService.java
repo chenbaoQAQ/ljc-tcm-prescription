@@ -149,6 +149,7 @@ public class PrescriptionService {
         });
     }
 
+    @Transactional(readOnly = true)
     public PrescriptionDetailResp getDetail(Long id) {
         return toDetailResp(getById(id));
     }

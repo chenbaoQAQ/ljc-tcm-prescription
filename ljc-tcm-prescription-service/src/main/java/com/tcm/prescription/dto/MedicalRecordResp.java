@@ -20,6 +20,7 @@ public class MedicalRecordResp {
     
     private List<MergedHerbItem> mergedHerbs;
     private String mergedHerbsText;
+    private String notes;
 
     @Data
     public static class MergedHerbItem {

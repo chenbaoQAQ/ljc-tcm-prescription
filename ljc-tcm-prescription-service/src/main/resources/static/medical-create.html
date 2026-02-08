@@ -36,7 +36,11 @@
             <input type="text" id="patientName" class="form-input mb-20" placeholder="请输入姓名" />
 
             <h3 class="form-label">就诊日期</h3>
-            <input type="date" id="visitDate" class="form-input" />
+            <input type="date" id="visitDate" class="form-input mb-20" />
+
+            <h3 class="form-label">备注 (选填)</h3>
+            <textarea id="notes" class="form-input" placeholder="添加备注信息..." rows="3"
+                style="resize: vertical;"></textarea>
         </div>
 
         <!-- Prescription Selection -->
@@ -104,10 +108,12 @@
             }
 
             try {
+                const notes = document.getElementById('notes').value.trim();
                 const res = await api.createMedicalRecord({
                     patientName,
                     visitDate,
-                    prescriptionIds
+                    prescriptionIds,
+                    notes: notes || null
                 });
 
                 // Show Success Modal
@@ -119,13 +125,12 @@
                     <div class="highlight-box">${herbListHtml}</div>
                     <button class="btn btn-sm" onclick="copyHerbs('${res.mergedHerbsText}')">📄 复制药材清单</button>
                 `, () => {
-                    if (confirm('是否继续开下一个病历？')) {
-                        document.getElementById('patientName').value = '';
-                        document.querySelectorAll('input[name="prescription"]').forEach(cb => cb.checked = false);
-                    } else {
-                        window.location.href = 'medical-list.html';
-                    }
-                }, '查看历史');
+                    // 查看历史：跳转到病历历史并自动搜索该患者
+                    window.location.href = `medical-list.html?q=${encodeURIComponent(patientName)}`;
+                }, '查看历史', () => {
+                    // 确定：返回首页
+                    window.location.href = 'index.html';
+                });
 
             } catch (err) {
                 // Handled

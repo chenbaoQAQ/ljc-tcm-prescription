@@ -93,6 +93,7 @@ public class MedicalRecordService {
         record.setPrescriptionIdsJson(prescriptionIdsJson);
         record.setPrescriptionNamesSnapshot(prescriptionNamesSnapshot);
         record.setMergedHerbsJson(mergedHerbsJson);
+        record.setNotes(req.getNotes());
 
         record = medicalRecordRepository.save(record);
 
@@ -164,6 +165,7 @@ public class MedicalRecordService {
         resp.setPatientName(record.getPatientName());
         resp.setVisitDate(record.getVisitDate());
         resp.setPrescriptionNames(record.getPrescriptionNamesSnapshot());
+        resp.setNotes(record.getNotes());
 
         // Deserialize prescription IDs
         try {

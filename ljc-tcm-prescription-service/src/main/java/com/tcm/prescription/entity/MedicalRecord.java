@@ -28,4 +28,7 @@ public class MedicalRecord extends BaseEntity {
 
     @Column(name = "merged_herbs_json", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String mergedHerbsJson;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }
