@@ -62,17 +62,19 @@ function showToast(message, type = 'info') {
 }
 
 // Modal Helper
-function showModal(title, contentHtml, onConfirm, confirmText = '确定') {
+function showModal(title, contentHtml, onConfirm, confirmText = '确定', onCancel = null) {
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.display = 'flex'; // Show immediately
+
+    const cancelText = onCancel ? '确定' : '取消';
 
     overlay.innerHTML = `
         <div class="modal">
             <h3 class="modal-title">${title}</h3>
             <div class="modal-body">${contentHtml}</div>
             <div class="modal-footer">
-                <button class="btn btn-sm" style="flex:1; background:#f5f5f5;" onclick="this.closest('.modal-overlay').remove()">取消</button>
+                <button class="btn btn-sm" style="flex:1; background:#f5f5f5;" id="modal-cancel">${cancelText}</button>
                 <button class="btn btn-sm btn-primary" style="flex:1" id="modal-confirm">${confirmText}</button>
             </div>
         </div>
@@ -80,6 +82,15 @@ function showModal(title, contentHtml, onConfirm, confirmText = '确定') {
 
     document.body.appendChild(overlay);
 
+    // Cancel/Close button
+    overlay.querySelector('#modal-cancel').onclick = () => {
+        if (onCancel) {
+            onCancel();
+        }
+        overlay.remove();
+    };
+
+    // Confirm button
     overlay.querySelector('#modal-confirm').onclick = () => {
         if (onConfirm) onConfirm();
         overlay.remove();

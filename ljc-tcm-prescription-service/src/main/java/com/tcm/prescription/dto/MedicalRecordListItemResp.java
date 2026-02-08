@@ -17,6 +17,7 @@ public class MedicalRecordListItemResp {
 
     private String prescriptionNames;
     private String mergedHerbsText;
+    private String notes;
     
     // Optional: for flexible frontend display
     private List<MergedHerbItem> mergedHerbs;

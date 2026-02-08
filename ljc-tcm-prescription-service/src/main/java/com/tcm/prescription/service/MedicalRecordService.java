@@ -193,6 +193,7 @@ public class MedicalRecordService {
         resp.setPatientName(record.getPatientName());
         resp.setVisitDate(record.getVisitDate());
         resp.setPrescriptionNames(record.getPrescriptionNamesSnapshot());
+        resp.setNotes(record.getNotes());
 
         // Deserialize and process merged herbs
         List<MergedHerbDto> mergedHerbs = deserializeMergedHerbs(record.getMergedHerbsJson());

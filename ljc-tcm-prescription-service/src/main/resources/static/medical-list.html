@@ -65,12 +65,37 @@
                     return;
                 }
 
-                listEl.innerHTML = list.map(item => `
+                // Group by patient name and count visits
+                const patientVisitCount = {};
+                const patientCurrentIndex = {};
+
+                // First pass: count total visits per patient
+                list.forEach(item => {
+                    const name = item.patientName;
+                    patientVisitCount[name] = (patientVisitCount[name] || 0) + 1;
+                    patientCurrentIndex[name] = 0;
+                });
+
+                // Second pass: render with correct visit number
+                listEl.innerHTML = list.map((item) => {
+                    const name = item.patientName;
+                    const totalVisits = patientVisitCount[name];
+                    const visitNumber = totalVisits - patientCurrentIndex[name]; // Descending order
+                    patientCurrentIndex[name]++;
+
+                    const notesDisplay = item.notes ? `<p class="list-subtitle" style="color:#666; margin-top:5px;">📝 ${item.notes}</p>` : '';
+
+                    return `
                     <div class="card">
                         <div class="list-item" style="border:none; padding:10px 0;" onclick="viewDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
                             <div style="flex:1;">
-                                <h4 class="list-title" style="margin-bottom:5px;">${item.patientName} <span style="font-size:14px;color:#999;font-weight:normal;">(${formatDate(item.visitDate)})</span></h4>
+                                <h4 class="list-title" style="margin-bottom:5px;">
+                                    <span style="display:inline-block; background:#1890ff; color:white; padding:2px 8px; border-radius:4px; font-size:12px; margin-right:8px;">第${visitNumber}次</span>
+                                    ${item.patientName} 
+                                    <span style="font-size:14px;color:#999;font-weight:normal;">(${formatDate(item.visitDate)})</span>
+                                </h4>
                                 <p class="list-subtitle">药方：${item.prescriptionNames}</p>
+                                ${notesDisplay}
                             </div>
                             <i class="fas fa-chevron-right" style="color:#ddd;"></i>
                         </div>
@@ -79,7 +104,7 @@
                         </div>
                         <button class="btn btn-sm btn-danger" style="margin-top:10px;" onclick="event.stopPropagation(); deleteRecord(${item.id}, '${item.patientName}')">删除记录</button>
                     </div>
-                `).join('');
+                `}).join('');
             } catch (err) {
                 listEl.innerHTML = '<div class="empty-state">加载失败</div>';
             }
