@@ -193,8 +193,8 @@ Page({
             showSuccessModal: false
         });
 
-        // 如果是 TabBar 页面用 switchTab，否则用 reLaunch
-        wx.switchTab({
+        // 返回首页
+        wx.reLaunch({
             url: '/pages/home/index'
         });
     },
