@@ -11,41 +11,51 @@ Page({
   },
 
   onLoad(options) {
-    // 加载药材库
-    this.loadHerbs();
-
-    // 如果有id，加载药方详情
-    if (options.id) {
-      this.setData({ id: options.id });
-      this.loadPrescription(options.id);
-    }
+    // 1. 先加载药材库
+    this.loadHerbs().then(() => {
+      // 2. 如果有id，再加载药方详情
+      if (options.id) {
+        this.setData({
+          id: options.id
+        });
+        this.loadPrescription(options.id);
+      }
+    });
   },
 
   /**
    * 加载药材库
    */
   loadHerbs() {
-    herbApi.getHerbs('', 1, 200)
-      .then(res => {
-        this.setData({
-          herbs: res.content || []
+    return new Promise((resolve, reject) => {
+      herbApi.getHerbs('', 1, 200)
+        .then(res => {
+          const list = res.content || res.list || [];
+          this.setData({
+            herbs: list
+          });
+          resolve(list);
+        })
+        .catch(err => {
+          console.error('加载药材库失败', err);
+          wx.showToast({
+            title: '药材库加载失败',
+            icon: 'none'
+          });
+          resolve([]); // 即使失败也resolve，避免阻塞
         });
-      })
-      .catch(err => {
-        console.error('加载药材库失败', err);
-        wx.showToast({
-          title: '请先添加药材',
-          icon: 'none'
-        });
-      });
+    });
   },
 
   /**
    * 加载药方详情（编辑模式）
    */
   loadPrescription(id) {
+    wx.showLoading({ title: '加载中...' });
+
     prescriptionApi.getPrescription(id)
       .then(res => {
+        wx.hideLoading();
         const { herbs } = this.data;
 
         // 回填药方名称
@@ -53,14 +63,15 @@ Page({
 
         // 回填药材明细
         const items = (res.items || []).map(item => {
-          // 找到药材在herbs数组中的索引
-          const herbIndex = herbs.findIndex(h => h.id === item.herbId);
-          const herbName = item.herbNameSnapshot || '';
+          // 找到药材在herbs数组中的索引（使用 == 比较，宽容类型）
+          // 确保 herbs 已加载
+          const herbIndex = herbs.findIndex(h => h.id == item.herbId);
+          const herbName = item.herbNameSnapshot || (herbIndex >= 0 ? herbs[herbIndex].nameCn : '');
 
           return {
             herbId: item.herbId,
             herbName,
-            herbIndex,
+            herbIndex, // 如果没找到为-1，picker会显示空
             doseG: item.doseG || ''
           };
         });
@@ -68,6 +79,7 @@ Page({
         this.setData({ items });
       })
       .catch(err => {
+        wx.hideLoading();
         console.error('加载药方失败', err);
       });
   },

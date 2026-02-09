@@ -59,7 +59,7 @@ Page({
             .then(res => {
                 wx.hideLoading();
 
-                let list = res.list || [];
+                let list = res.content || res.list || [];
 
                 // 计算序号逻辑：按患者分组倒序计数
                 // 1. 统计每个患者的总次数
