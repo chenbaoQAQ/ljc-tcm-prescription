@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>药材库</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="nav-bar">
+        <a href="index.html" class="nav-back"><i class="fas fa-chevron-left"></i></a>
+        <h1 class="nav-title">药材库</h1>
+        <div class="nav-back"></div>
+    </div>
+
+    <div class="container">
+        <!-- New Herb Input -->
+        <div class="card form-item">
+            <h3 class="form-label">新增药材</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="herbName" class="form-input" placeholder="输入药材名称" />
+                <button class="btn btn-sm btn-primary" onclick="addHerb()">添加</button>
+            </div>
+        </div>
+
+        <!-- Herb List -->
+        <h3 class="title">药材列表</h3>
+        <div id="herbList" class="card">
+            <!-- Items injected by JS -->
+            <div class="empty-state">加载中...</div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // On Load
+        document.addEventListener('DOMContentLoaded', loadHerbs);
+
+        async function loadHerbs() {
+            const listEl = document.getElementById('herbList');
+            listEl.innerHTML = '<div class="empty-state">加载中...</div>';
+
+            try {
+                const data = await api.getHerbs({
+                    page: 1,
+                    size: 100
+                });
+
+                const list = data.content || [];
+
+                if (list.length === 0) {
+                    listEl.innerHTML = '<div class="empty-state">暂无药材，请先添加</div>';
+                    return;
+                }
+
+                listEl.innerHTML = list.map(item => `
+                    <div class="list-item">
+                        <span class="list-title">${item.nameCn}</span>
+                        <button class="btn btn-sm btn-danger" onclick="deleteHerb(${item.id}, '${item.nameCn}')">删除</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                listEl.innerHTML = '<div class="empty-state">加载失败</div>';
+            }
+        }
+
+        async function addHerb() {
+            const input = document.getElementById('herbName');
+            const name = input.value.trim();
+
+            if (!name) {
+                showToast('请输入药材名称', 'error');
+                return;
+            }
+
+            try {
+                await api.createHerb(name);
+                showToast('添加成功');
+                input.value = '';
+                loadHerbs();
+            } catch (err) {
+                // Handled in api.js
+            }
+        }
+
+        function deleteHerb(id, name) {
+            if (confirm(`确定要删除"${name}"吗？`)) {
+                api.deleteHerb(id).then(() => {
+                    showToast('已删除');
+                    loadHerbs();
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
