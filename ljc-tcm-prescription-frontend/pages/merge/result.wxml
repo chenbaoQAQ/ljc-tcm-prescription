@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="header">
+    <text class="title">Merged Herb List</text>
+    <text class="subtitle">Total: {{mergedHerbs.length}} herbs</text>
+  </view>
+
+  <!-- Merged Herb List -->
+  <scroll-view scroll-y class="herb-list">
+    <block wx:if="{{mergedHerbs.length > 0}}">
+      <view class="herb-card" wx:for="{{mergedHerbs}}" wx:key="herbName">
+        <view class="herb-main">
+          <text class="herb-name">{{item.herbName}}</text>
+          <text class="herb-dose">{{item.totalDoseG}}g</text>
+        </view>
+        <view wx:if="{{item.sources && item.sources.length > 0}}" class="herb-sources">
+          <text class="sources-label">Sources:</text>
+          <block wx:for="{{item.sources}}" wx:for-item="source" wx:key="prescriptionName">
+            <text class="source-item">{{source.prescriptionName}} ({{source.doseG}}g)</text>
+          </block>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty-state">No data.</view>
+  </scroll-view>
+
+  <!-- Action Buttons -->
+  <view class="action-bar">
+    <button type="primary" bindtap="onCopy">Copy to Clipboard</button>
+    <button type="default" bindtap="onBack">Back</button>
+  </view>
+</view>

@@ -1,0 +1,23 @@
+<view class="container">
+  <!-- 新建按钮 -->
+  <view class="top-bar">
+    <button class="add-btn" type="primary" bindtap="onAdd">+ 新建药方</button>
+  </view>
+
+  <!-- 药方列表 -->
+  <view class="prescription-list">
+    <view wx:if="{{prescriptions.length > 0}}">
+      <view class="prescription-item" wx:for="{{prescriptions}}" wx:key="id">
+        <text class="prescription-name">{{item.name}}</text>
+        <view class="actions">
+          <button class="action-btn edit" size="mini" bindtap="onEdit" data-id="{{item.id}}">编辑</button>
+          <button class="action-btn delete" size="mini" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.name}}">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      暂无药方，点击"新建药方"开始
+    </view>
+  </view>
+</view>

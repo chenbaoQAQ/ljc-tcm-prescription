@@ -1,0 +1,43 @@
+<view class="container">
+  <!-- 药方名称 -->
+  <view class="card">
+    <view class="form-item">
+      <view class="form-label">药方名称 *</view>
+      <input class="form-input" placeholder="请输入药方名称" value="{{name}}" bindinput="onNameInput" />
+    </view>
+  </view>
+
+  <!-- 药材明细 -->
+  <view class="section-title">
+    <text>药材明细（至少1味）</text>
+    <button class="add-item-btn" size="mini" type="primary" bindtap="onAddItem">+ 添加药材</button>
+  </view>
+
+  <view class="items-list">
+    <view wx:if="{{items.length > 0}}">
+      <view class="item-row" wx:for="{{items}}" wx:key="index" wx:for-index="idx">
+        <!-- 药材选择器 -->
+        <picker class="herb-picker" range="{{herbs}}" range-key="nameCn" value="{{item.herbIndex}}" bindchange="onHerbChange" data-idx="{{idx}}">
+          <view class="picker-display">
+            {{item.herbName || '选择药材'}}
+          </view>
+        </picker>
+
+        <!-- 克重输入 -->
+        <input class="dose-input" type="digit" placeholder="克重" value="{{item.doseG}}" bindinput="onDoseInput" data-idx="{{idx}}" />
+        
+        <text class="unit">g</text>
+
+        <!-- 删除按钮 -->
+        <button class="delete-btn" size="mini" bindtap="onDeleteItem" data-idx="{{idx}}">×</button>
+      </view>
+    </view>
+
+    <view wx:else class="empty-hint">
+      点击"+ 添加药材"开始配方
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button class="save-btn" type="primary" bindtap="onSave">保存药方</button>
+</view>

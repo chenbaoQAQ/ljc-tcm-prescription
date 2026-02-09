@@ -1,0 +1,28 @@
+<view class="container">
+  <!-- 新增药材 -->
+  <view class="card">
+    <view class="form-item">
+      <view class="form-label">新增药材</view>
+      <view class="add-herb-row">
+        <input class="form-input" placeholder="输入药材名称" value="{{newHerbName}}" bindinput="onNewHerbInput" confirm-type="done" bindconfirm="onAddHerb" />
+        <button class="add-btn" type="primary" bindtap="onAddHerb">添加</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 药材列表 -->
+  <view class="section-title">药材库</view>
+
+  <view class="herb-list">
+    <view wx:if="{{herbs.length > 0}}">
+      <view class="herb-item" wx:for="{{herbs}}" wx:key="id">
+        <text class="herb-name">{{item.nameCn}}</text>
+        <button class="delete-btn" size="mini" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.nameCn}}">删除</button>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      暂无药材，请先添加
+    </view>
+  </view>
+</view>
