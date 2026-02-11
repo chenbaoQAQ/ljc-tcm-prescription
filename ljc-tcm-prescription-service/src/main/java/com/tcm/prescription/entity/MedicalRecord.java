@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "medical_records")
-@Where(clause = "deleted_at is null")
+// @Where(clause = "deleted_at is null") // Changed to physical delete
 public class MedicalRecord extends BaseEntity {
 
     @Column(name = "patient_name", nullable = false, length = 64)

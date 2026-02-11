@@ -82,10 +82,11 @@ public class HerbService {
         return herbRepository.findAll(spec, PageRequest.of(query.getPage() - 1, query.getSize(), Sort.by(Sort.Direction.DESC, "id")));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
-        Herb herb = getById(id);
-        herb.setDeletedAt(LocalDateTime.now());
-        herbRepository.save(herb);
+        if (!herbRepository.existsById(id)) {
+            throw new ServiceException(ErrorCode.NOT_FOUND.getCode(), "Herb not found");
+        }
+        herbRepository.deleteById(id);
     }
 }

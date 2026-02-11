@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "prescriptions")
 @Getter
 @Setter
-@Where(clause = "deleted_at is null")
+// @Where(clause = "deleted_at is null") // Changed to physical delete
 public class Prescription extends BaseEntity {
 
     @Column(name = "name", nullable = false, length = 128)

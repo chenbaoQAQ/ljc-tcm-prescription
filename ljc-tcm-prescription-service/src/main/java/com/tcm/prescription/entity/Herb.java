@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "herbs")
+// @Where(clause = "deleted_at is null") // Changed to physical delete
 @Getter
 @Setter
-@Where(clause = "deleted_at is null")
 public class Herb extends BaseEntity {
 
     @Column(name = "name_cn", nullable = false, unique = true, length = 64)

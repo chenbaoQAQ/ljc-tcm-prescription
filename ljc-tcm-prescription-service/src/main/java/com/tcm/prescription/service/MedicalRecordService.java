@@ -125,10 +125,11 @@ public class MedicalRecordService {
 
     @Transactional
     public void delete(Long id) {
-        MedicalRecord record = getById(id);
-        record.setDeletedAt(LocalDateTime.now());
-        medicalRecordRepository.save(record);
-        log.info("Soft deleted medical record {}", id);
+        if (!medicalRecordRepository.existsById(id)) {
+            throw new ServiceException(ErrorCode.NOT_FOUND.getCode(), "Medical record not found");
+        }
+        medicalRecordRepository.deleteById(id);
+        log.info("Physically deleted medical record {}", id);
     }
 
     private MedicalRecord getById(Long id) {

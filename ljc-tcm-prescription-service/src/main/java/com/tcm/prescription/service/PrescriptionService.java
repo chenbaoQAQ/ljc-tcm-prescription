@@ -34,6 +34,8 @@ public class PrescriptionService {
     private final HerbRepository herbRepository;
     private final PrescriptionItemRepository prescriptionItemRepository;
 
+
+
     @Transactional
     public PrescriptionDetailResp create(PrescriptionCreateReq req) {
         validateItems(req.getItems());
@@ -159,15 +161,12 @@ public class PrescriptionService {
                 .orElseThrow(() -> new ServiceException(ErrorCode.NOT_FOUND.getCode(), "Prescription not found"));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
-        Prescription p = getById(id);
-        LocalDateTime now = LocalDateTime.now();
-        p.setDeletedAt(now);
-        for (PrescriptionItem item : p.getItems()) {
-            item.setDeletedAt(now);
+        if (!prescriptionRepository.existsById(id)) {
+            throw new ServiceException(ErrorCode.NOT_FOUND.getCode(), "Prescription not found");
         }
-        prescriptionRepository.save(p);
+        prescriptionRepository.deleteById(id);
     }
 
     public MergeResp merge(MergeReq req) {
